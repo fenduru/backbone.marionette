@@ -18,7 +18,10 @@ MyApp = new Backbone.Marionette.Application();
 * [Adding Initializers](#adding-initializers)
 * [Application Event](#application-event)
 * [Starting An Application](#starting-an-application)
-* [app.vent: Event Aggregator](#appvent-event-aggregator)
+* [Messaging Systems](#messaging-systems)
+  * [Event Aggregator](#event-aggregator)
+  * [Request Response](#request-response)
+  * [Commands](#commands)
 * [Regions And The Application Object](#regions-and-the-application-object)
   * [jQuery Selector](#jquery-selector)
   * [Custom Region Type](#custom-region-type)
@@ -109,10 +112,16 @@ var options = {
 MyApp.start(options);
 ```
 
-## app.vent: Event Aggregator
+## Messaging Systems
 
-Every application instance comes with an instance of `Backbone.Wreqr.EventAggregator` 
-called `app.vent`.
+Applications have an instance of each of the three messaging systems of `Backbone.Wreqr` attached to them. This
+section will give a brief overview of the systems; for a more in-depth look you are encouraged to read
+the [`Backbone.Wreqr` documentation](https://github.com/marionettejs/backbone.wreqr).
+
+### Event Aggregator
+
+The Event Aggreggator is available through `app.vent`. This is convenient for communicating events between the components
+of your app at the application level.
 
 ```js
 MyApp = new Backbone.Marionette.Application();
@@ -124,7 +133,46 @@ MyApp.vent.on("foo", function(){
 MyApp.vent.trigger("foo"); // => alert box "bar"
 ```
 
-See the [`Backbone.Wreqr`](https://github.com/marionettejs/backbone.wreqr) documentation for more details.
+### Request Response
+
+Request Response is a means for components to share information between one another without being
+tightly coupled. Applications have an instance of Request Response available through their `reqres` property. 
+
+```js
+MyApp = new Backbone.Marionette.Application();
+
+MyApp.reqres.setHandler("foo", function(bar){
+  return bar + "-quux";
+});
+
+// Make the request; receives "baz-quux" in response
+MyApp.reqres.request("foo", "baz");
+
+// For convenience the request method is also attached directly to the Application
+MyApp.request("foo", "baz");
+```
+
+### Commands
+
+When you need a component of your application to tell another component to perform an action,
+the Commands messaging system is the suggested means to go about tihs. Applications have an
+instance of Commands as the `commands` property.
+
+Note that the callback of a command is not meant to return a value.
+
+```js
+MyApp = new Backbone.Marionette.Application();
+
+MyApp.commands.setHandler("foo", function(bar){
+  console.log(bar);
+});
+
+// Fire the method; logs "baz"
+MyApp.commands.execute("foo", "baz");
+
+// You can also access the 'execute' method directly from the Application
+MyApp.execute("foo", "baz");
+```
 
 ## Regions And The Application Object
 
