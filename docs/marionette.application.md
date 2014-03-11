@@ -120,8 +120,8 @@ the [`Backbone.Wreqr` documentation](https://github.com/marionettejs/backbone.wr
 
 ### Event Aggregator
 
-The Event Aggreggator is available through `app.vent`. This is convenient for communicating events between the components
-of your app at the application level.
+The Event Aggreggator is available through `app.vent`. This is convenient for sharing information between the pieces
+of your application through events.
 
 ```js
 MyApp = new Backbone.Marionette.Application();
@@ -155,7 +155,7 @@ MyApp.request("foo", "baz");
 ### Commands
 
 When you need a component of your application to tell another component to perform an action,
-the Commands messaging system is the suggested means to go about tihs. Applications have an
+the Commands messaging system is the suggested means to accomplish this. Applications have an
 instance of Commands as the `commands` property.
 
 Note that the callback of a command is not meant to return a value.
