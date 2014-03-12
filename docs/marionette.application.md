@@ -152,8 +152,8 @@ MyApp.reqres.setHandler("todoList", function(type){
   return this.todoLists[type];
 });
 
-// Make the request for the list at the moment that you need it
-var someData = MyApp.request("todoList", "groceries");
+// Make the request to get the grocery list
+var groceryList = MyApp.request("todoList", "groceries");
 ```
 
 ### Commands
@@ -175,7 +175,7 @@ MyApp.commands.setHandler("fetchData", function(reset){
   MyApp.model.fetch({reset: reset});
 });
 
-// Command the data to be fetched
+// Order that the data be fetched
 MyApp.execute("fetchData", true);
 ```
 
