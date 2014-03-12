@@ -114,48 +114,52 @@ MyApp.start(options);
 
 ## Messaging Systems
 
-Applications have an instance of each of the three messaging systems of `Backbone.Wreqr` attached to them. This
+Application instances have an instance of each of the three messaging systems of `Backbone.Wreqr` attached to them. This
 section will give a brief overview of the systems; for a more in-depth look you are encouraged to read
 the [`Backbone.Wreqr` documentation](https://github.com/marionettejs/backbone.wreqr).
 
 ### Event Aggregator
 
-The Event Aggreggator is available through `app.vent`. This is convenient for sharing information between the pieces
-of your application through events.
+The Event Aggreggator is available through the `vent` property. This is convenient for passively sharing information between
+the pieces of your application as events occur.
 
 ```js
 MyApp = new Backbone.Marionette.Application();
 
-MyApp.vent.on("foo", function(){
-  alert("bar");
+// Alert the user on the 'minutePassed' event
+MyApp.vent.on("minutePassed", function( someData ){
+  alert("Received", someData);
 });
 
-MyApp.vent.trigger("foo"); // => alert box "bar"
+// This will emit an event with the value of window.someData every minute
+window.setInterval(function() {
+
+  MyApp.vent.trigger("minutePassed", window.someData);
+
+}, 60000);
 ```
 
 ### Request Response
 
 Request Response is a means for components to share information between one another without being
-tightly coupled. Applications have an instance of Request Response available through their `reqres` property. 
+tightly coupled. Application instances have an instance of Request Response available through their `reqres` property. 
 
 ```js
 MyApp = new Backbone.Marionette.Application();
 
-MyApp.reqres.setHandler("foo", function(bar){
-  return bar + "-quux";
+// Set up a handler to return a todoList based on type
+MyApp.reqres.setHandler("todoList", function(type){
+  return this.todoLists[type];
 });
 
-// Make the request; receives "baz-quux" in response
-MyApp.reqres.request("foo", "baz");
-
-// For convenience the request method is also attached directly to the Application
-MyApp.request("foo", "baz");
+// Make the request for the list at the moment that you need it
+var someData = MyApp.request("todoList", "groceries");
 ```
 
 ### Commands
 
 When you need a component of your application to tell another component to perform an action,
-the Commands messaging system is the suggested means to accomplish this. Applications have an
+the Commands messaging system is the suggested means to accomplish this. Application instances have an
 instance of Commands as the `commands` property.
 
 Note that the callback of a command is not meant to return a value.
@@ -163,15 +167,16 @@ Note that the callback of a command is not meant to return a value.
 ```js
 MyApp = new Backbone.Marionette.Application();
 
-MyApp.commands.setHandler("foo", function(bar){
-  console.log(bar);
+MyApp.model = new Backbone.Model();
+
+// Set up the handler to call fetch on the model
+MyApp.commands.setHandler("fetchData", function(reset){
+  reset = reset || false;
+  MyApp.model.fetch({reset: reset});
 });
 
-// Fire the method; logs "baz"
-MyApp.commands.execute("foo", "baz");
-
-// You can also access the 'execute' method directly from the Application
-MyApp.execute("foo", "baz");
+// Command the data to be fetched
+MyApp.execute("fetchData", true);
 ```
 
 ## Regions And The Application Object
